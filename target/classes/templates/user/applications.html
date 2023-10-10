@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <title>Applications</title>
+
+    <link rel="stylesheet" type="text/css" href="/css/user.css">
+
+</head>
+<body>
+
+
+<div class="user-home-page">
+
+    <div class="navbar-main">
+        <h3>SB Rentzz <b><span id="nav-username" ></span></b></h3>
+
+        <div class="navbar-options">
+            <a id="nav-home" href="/user/" >Home</a>
+            <a id="nav-rentals" href="/user-rentals/"  >My Rentals</a>
+            <a id="nav-applications" href="/user-applications/" class="selected">Rental Applications</a>
+        </div>
+        <button id="logoutBtn" >Logout</button>
+    </div>
+
+    <script>
+
+        const myLink = document.getElementById('logoutBtn');
+
+        myLink.addEventListener('click', function(event) {
+            event.preventDefault();
+
+            localStorage.clear();
+            for (let key in localStorage) {
+                if (localStorage.hasOwnProperty(key)) {
+                    localStorage.removeItem(key);
+                }
+            }
+            window.location.href = '/';
+
+        });
+    </script>
+
+    <script>
+
+        function fetchData() {
+
+            var localStorageData = localStorage.getItem('userData');
+            var userData = JSON.parse(localStorageData);
+
+            const navHome = document.getElementById('nav-home');
+            const navRentals = document.getElementById('nav-rentals');
+            const navApplications = document.getElementById('nav-applications');
+
+            navHome.href = `/user/${userData._id}`;
+            navRentals.href = `/user-rentals/${userData._id}`;
+            navApplications.href = `/user-applications/${userData._id}`;
+
+
+            const navUsername = document.getElementById('nav-username');
+            navUsername.innerHTML = userData.username;
+
+        }
+        fetchData();
+
+    </script>
+
+
+
+
+    <!-- Applications -->
+
+    <div class="user-home-container" >
+
+        <div class="user-home-header">
+            <h3>Submitted Applications</h3>
+
+        </div>
+
+        <div class="user-home-body" >
+            <div class="property-list">
+
+                <div th:each="applic: ${applicationsList}" >
+                    <form class="property" >
+                        <input type="hidden" th:value="${applic._id}" name="propertyId" >
+                        <div id="carouselExampleControls2" class="carousel slide" data-bs-ride="carousel">
+                            <div class="carousel-inner">
+                                <div class="carousel-item active">
+                                    <img th:src="${applic.carouselImage1}" class="d-block w-100" alt="...">
+                                </div>
+                                <div class="carousel-item">
+                                    <img th:src="${applic.carouselImage2}" class="d-block w-100" alt="...">
+                                </div>
+                                <div class="carousel-item">
+                                    <img th:src="${applic.carouselImage3}" class="d-block w-100" alt="...">
+                                </div>
+                            </div>
+                            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls2" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls2" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
+                        </div>
+
+                        <h4 th:text="${applic.description}" ></h4>
+                        <span>
+                          <p><b>Rent: </b>&#8377; <span th:text="${applic.rent}" ></span>/-</p>
+                          <p><b>Deposit: </b>&#8377;  <span th:text="${applic.deposit}" ></span>/-</p>
+                      </span>
+                        <p><b>Agreement Duration: </b><span th:text="${applic.agreementDuration}" ></span> mths</p>
+                        <p><b>Owner name: </b><span th:text="${applic.ownerName}" ></span></p>
+                        <p><b>Address: </b><span th:text="${applic.address}" ></span></p>
+
+                        <button th:if="${applic.status == 'Pending'}" class="btn btn-danger primaryBtn userApplicationApproveBtn" >Withdraw</button>
+
+                        <button th:if="${applic.status == 'Accepted'}" class="btn btn-success primaryBtn" disabled>Accepted</button>
+
+                        <button th:if="${applic.status == 'Rejected'}" class="btn btn-danger primaryBtn" disabled>Rejected</button>
+
+                    </form>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+    const userPropertyBookNowBtn = document.querySelectorAll('.userApplicationApproveBtn');
+
+    userPropertyBookNowBtn.forEach(button => {
+        button.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(this.closest('form'));
+            alert("Application withdrawal successful!!");
+            fetch('/withdraw-application', {
+                method: 'POST',
+                body: formData,
+            })
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        console.error('Operation failed');
+                    }
+                })
+                .then(data => {
+                    // Handle the response data as needed
+                });
+        });
+    });
+</script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+
+</body>
+</html>

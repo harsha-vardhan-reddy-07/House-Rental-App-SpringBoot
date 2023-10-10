@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <title>Hello, world!</title>
+    <link rel="stylesheet" type="text/css" href="/css/owner.css">
+
+</head>
+<body>
+
+
+<div class="user-home-page">
+
+    <div class="navbar-main">
+        <h3>SB Rentzz</h3>
+
+        <div class="navbar-options">
+            <a id="nav-owner-home" href="/owner/ksdb" >Home</a>
+            <a id="nav-owner-new-property" href="/new-property/khjb" >Add Property</a>
+            <!--            <a id="nav-owner-home" href="/update-property/khjb" >Update Property</a>-->
+            <a id="nav-owner-applications" href="/owner-applications/ksdjn" class="selected">Applications</a>
+        </div>
+        <button id="logoutBtn" >Logout</button>
+    </div>
+
+    <script>
+
+        const myLink = document.getElementById('logoutBtn');
+
+        myLink.addEventListener('click', function(event) {
+            event.preventDefault();
+
+            localStorage.clear();
+            for (let key in localStorage) {
+                if (localStorage.hasOwnProperty(key)) {
+                    localStorage.removeItem(key);
+                }
+            }
+            window.location.href = '/';
+
+        });
+    </script>
+
+
+
+
+
+    <!-- Pending Requests -->
+
+    <div class="user-home-container" >
+
+        <div class="user-home-header">
+            <h3>Pending Applications</h3>
+            <h4>Username: <b id="nav-username" ></b> </h4>
+        </div>
+
+        <div class="user-home-body" >
+            <div class="property-list">
+
+                <div th:each="applic: ${applicationsList}" >
+
+                    <form class="property" >
+
+                        <input type="hidden" th:value="${applic._id}" name="ownerId">
+                        <div id="carouselExampleControls2" class="carousel slide" data-bs-ride="carousel">
+                            <div class="carousel-inner">
+                                <div class="carousel-item active">
+                                    <img th:src="${applic.carouselImage1}" class="d-block w-100" alt="...">
+                                </div>
+                                <div class="carousel-item">
+                                    <img th:src="${applic.carouselImage2}" class="d-block w-100" alt="...">
+                                </div>
+                                <div class="carousel-item">
+                                    <img th:src="${applic.carouselImage3}" class="d-block w-100" alt="...">
+                                </div>
+                            </div>
+                            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls2" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls2" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
+                        </div>
+
+                        <h4 th:text="${applic.description}" ></h4>
+                        <span>
+                            <p><b>Rent: </b>&#8377; <span th:text="${applic.rent}"></span>/-</p>
+                            <p><b>Deposit: </b>&#8377; <span th:text="${applic.deposit}"></span>/-</p>
+                        </span>
+                        <p><b>Address: </b><span th:text="${applic.address}"></span></p>
+                        <p><b>Customer: </b><span th:text="${applic.applicantName}"></span></p>
+                        <p><b>Email: </b><span th:text="${applic.applicantEmail}"></span></p>
+                        <p><b>Status: </b><span th:text="${applic.status}"></span></p>
+                        <span th:if="${applic.status == 'Pending'}">
+                            <button  class="btn btn-primary primaryBtn approveApplicationBtn " >Approve</button>
+                            <button  class="btn btn-danger dangerBtn rejectApplicationBtn">Reject</button>
+                        </span>
+                        <button th:if="${applic.status == 'Accepted'}" class="btn btn-success primaryBtn" disabled>Approved</button>
+                        <button th:if="${ applic.status == 'Rejected'}" class="btn btn-danger primaryBtn" disabled>Rejected</button>
+                    </form>
+                </div>
+
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<script>
+
+    function fetchData() {
+
+        var localStorageData = localStorage.getItem('userData');
+        var userData = JSON.parse(localStorageData);
+
+        const navHome = document.getElementById('nav-owner-home');
+        const navNewProperty = document.getElementById('nav-owner-new-property');
+        const navApplications = document.getElementById('nav-owner-applications');
+
+        navHome.href = `/owner/${userData._id}`;
+        navNewProperty.href = `/new-property/${userData._id}`;
+        navApplications.href = `/owner-applications/${userData._id}`;
+
+        const navUsername = document.getElementById('nav-username');
+        navUsername.innerHTML = userData.username;
+
+    }
+    fetchData();
+
+</script>
+
+
+<script>
+    const approveApplicationBtn = document.querySelectorAll('.approveApplicationBtn');
+    const rejectApplicationBtn = document.querySelectorAll('.rejectApplicationBtn');
+
+    approveApplicationBtn.forEach(button => {
+        button.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(this.closest('form'));
+            alert("Application Approval successful!!");
+            fetch('/approve-application', {
+                method: 'POST',
+                body: formData,
+            })
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        console.error('Operation failed');
+                    }
+                })
+                .then(data => {
+                    // Handle the response data as needed
+                });
+        });
+    });
+
+
+    rejectApplicationBtn.forEach(button => {
+        button.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(this.closest('form'));
+            alert("Application Rejection successful!!");
+            fetch('/reject-application', {
+                method: 'POST',
+                body: formData,
+            })
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        console.error('Operation failed');
+                    }
+                })
+                .then(data => {
+                    // Handle the response data as needed
+                });
+        });
+    });
+
+
+</script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+
+</body>
+</html>

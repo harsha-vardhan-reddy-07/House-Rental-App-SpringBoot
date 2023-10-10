@@ -1,0 +1,50 @@
+
+.Authentication{
+    width: 40%;
+    border-radius: 0.5rem;
+    margin: 15vh 30% 0 30%;
+    box-shadow: rgba(0, 0, 0, 0.15) 0px 5px 15px 0px;
+}
+
+.Authentication .Auth{
+    width: 80%;
+    height: fit-content;
+    margin: 5% 10%;
+    backdrop-filter: blur(15px);
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    border-radius: 1.5rem;
+    background-color: rgba(240, 248, 255, 0);
+}
+
+.Authentication .hide{
+    display: none;
+}
+
+.Authentication form{
+    width: 100%;
+    padding: 3vh 2vw;
+    display: flex;
+    flex-direction: column;
+}
+.Authentication form h3{
+    text-align: center;
+    color: #125989bc;
+    font-size: 1.8rem;
+    font-weight: 500;
+    margin-bottom: 20px;
+}
+
+.Authentication form p{
+    text-align: center;
+    margin-top: 20px;
+}
+.Authentication form p a{
+    color: rgb(18, 99, 153);
+    cursor: pointer;
+    text-decoration: none;
+}
+
+ .Authentication form button{
+    height: 8vh ;
+    font-weight: 500;
+}

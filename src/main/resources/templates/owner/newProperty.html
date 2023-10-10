@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <title>Add property</title>
+    <link rel="stylesheet" type="text/css" href="/css/owner.css">
+
+</head>
+<body>
+
+
+<div class="user-home-page">
+
+    <div class="navbar-main">
+        <h3>SB Rentzz</h3>
+
+        <div class="navbar-options">
+            <a id="nav-owner-home" href="/owner/ksdb" >Home</a>
+            <a id="nav-owner-new-property" href="/new-property/khjb" class="selected" >Add Property</a>
+            <!--            <a id="nav-owner-home" href="/update-property/khjb" >Update Property</a>-->
+            <a id="nav-owner-applications" href="/owner-applications/ksdjn">Applications</a>
+        </div>
+        <button id="logoutBtn" >Logout</button>
+    </div>
+
+    <script>
+
+        const myLink = document.getElementById('logoutBtn');
+
+        myLink.addEventListener('click', function(event) {
+            event.preventDefault();
+
+            localStorage.clear();
+            for (let key in localStorage) {
+                if (localStorage.hasOwnProperty(key)) {
+                    localStorage.removeItem(key);
+                }
+            }
+            window.location.href = '/';
+
+        });
+    </script>
+
+
+
+
+
+
+
+    <!-- New Property -->
+
+    <div class="user-home-container" >
+        <div class="user-home-header">
+            <h3>New Property Details</h3>
+            <h4>Username: <b id="nav-username" ></b> </h4>
+        </div>
+
+        <div class="user-home-body" >
+
+            <form class="update-owner-details" id="newPropertyForm" action="/add-property" method="post" >
+
+                    <input type="hidden" id="formInputOwnerId" name="ownerId">
+                    <input type="hidden" id="formInputOwnerName" name="ownerName">
+                    <span class="span-70-30">
+
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="floatingUpdatedescription"  name="description"  >
+                            <label for="floatingUpdatedescription">Description</label>
+                        </div>
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="floatingUpdatearea"  name="area">
+                            <label for="floatingUpdatearea">Area (sq.ft)</label>
+                        </div>
+
+                    </span>
+
+                <span class="span-33-33-33">
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="floatingUpdatepropImg1"  name="carouselImage1" >
+                            <label for="floatingUpdatepropImg1">Property Image 1</label>
+                        </div>
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="floatingUpdatepropImg2"  name="carouselImage2" >
+                            <label for="floatingUpdatepropImg2">Property Image 2</label>
+                        </div>
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="floatingUpdatepropImg3"  name="carouselImage3" >
+                            <label for="floatingUpdatepropImg3">Property Image 3</label>
+                        </div>
+                    </span>
+
+                <span class="span-50-25-25">
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="floatingUpdateaddress"  name="address" >
+                            <label for="floatingUpdateaddress">Address</label>
+                        </div>
+                        <div class="form-floating">
+                            <input type="number" class="form-control" id="floatingUpdaterent"  name="rent">
+                            <label for="floatingUpdaterent">Rent (per month)</label>
+                        </div>
+                        <div class="form-floating">
+                            <input type="number" class="form-control" id="floatingUpdatedeposit"  name="deposit" >
+                            <label for="floatingUpdatedeposit">Deposit</label>
+                        </div>
+                    </span>
+
+                <span class="span-33-33-33">
+                        <div class="form-floating">
+                            <select class="form-control" id="floatingUpdateFurniture"  name="furnished" >
+                                <option value="Un Furnished">Un Furnished</option>
+                                <option value="Semi Furnished">Semi Furnished</option>
+                                <option value="Fully Furnished">Fully Furnished</option>
+                            </select>
+                            <label for="floatingUpdateFurniture">Furniture</label>
+                        </div>
+                        <div class="form-floating">
+                            <select class="form-control" id="floatingUpdateAvailablefor"  name="availableFor" >
+                                <option value="All">All</option>
+                                <option value="Family">Family</option>
+                                <option value="Bachelors">Bachelors</option>
+                                <option value="Commercial">Commercial</option>
+                            </select>
+                            <label for="floatingUpdateAvailablefor">Available For</label>
+                        </div>
+                        <div class="form-floating">
+                            <input type="number" class="form-control" id="floatingUpdateagreement"  name="agreementDuration" >
+                            <label for="floatingUpdateagreement">Agreement (in months)</label>
+                        </div>
+                    </span>
+
+
+
+                <button  class="btn btn-primary" type="submit" >Add Property</button>
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
+
+<script>
+    document.getElementById('newPropertyForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+
+        const formData = new FormData(this);
+
+
+        fetch('/add-property', {
+            method: 'POST',
+            body: formData,
+        })
+            .then(response => {
+                if (response.ok) {
+
+
+                    var data = response.json();
+
+                    return data;
+                } else {
+                    console.error('process failed');
+                }
+            })
+            .then(property => {
+                alert("Property added!!");
+
+                const propertyData = JSON.parse(JSON.stringify(property));
+
+                window.location.href = `/owner/${propertyData.ownerId}`
+
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    });
+</script>
+
+
+
+
+<script>
+
+    function fetchData() {
+
+        var localStorageData = localStorage.getItem('userData');
+        var userData = JSON.parse(localStorageData);
+
+        const navHome = document.getElementById('nav-owner-home');
+        const navNewProperty = document.getElementById('nav-owner-new-property');
+        const navApplications = document.getElementById('nav-owner-applications');
+
+        navHome.href = `/owner/${userData._id}`;
+        navNewProperty.href = `/new-property/${userData._id}`;
+        navApplications.href = `/owner-applications/${userData._id}`;
+
+
+        const navUsername = document.getElementById('nav-username');
+        navUsername.innerHTML = userData.username;
+
+
+        const formInputOwnerName = document.getElementById('formInputOwnerName');
+        const formInputOwnerId = document.getElementById('formInputOwnerId');
+
+        formInputOwnerId.value= userData._id;
+        formInputOwnerName.value = userData.username;
+
+    }
+    fetchData();
+
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+
+</body>
+</html>

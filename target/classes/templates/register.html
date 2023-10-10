@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <title>Register</title>
+
+    <link rel="stylesheet" type="text/css" href="/css/authenticate.css">
+
+</head>
+<body>
+
+
+
+<div class="Authentication" id="joinNow">
+
+        <form id="registerForm" action="/register-user" method="post" >
+            <h3>Register</h3>
+            <div class="form-floating mb-3">
+                <input type="email" class="form-control" id="exampleInputEmail2" aria-describedby="emailHelp" name="email">
+                <label for="exampleInputEmail2" class="form-label">Email address</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="exampleInputUsername2" name="username">
+                <label for="exampleInputUsername2" class="form-label">Username</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="password" class="form-control" id="exampleInputPassword2" name="password" >
+                <label for="exampleInputPassword2" class="form-label">Password</label>
+            </div>
+            <div class="form-floating mb-3">
+                <select class="form-select" id="userTypeSelect" aria-label="Default select example" name="usertype">
+                    <option selected></option>
+                    <option value="customer">Customer</option>
+                    <option value="owner">Owner</option>
+                    <option value="admin">Admin</option>
+                </select>
+                <label for="userTypeSelect" class="form-label">User Type</label>
+            </div>
+
+            <button type="submit" class="btn btn-primary"  >Register</button>
+            <p>Already registered ? <a href="/login">Login now!!</a></p>
+        </form>
+
+</div>
+
+
+<script>
+    document.getElementById('registerForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+
+        const formData = new FormData(this);
+
+        fetch('/register-user', {
+            method: 'POST',
+            body: formData,
+        })
+            .then(response => {
+                if (response.ok) {
+
+                    var data = response.json();
+
+                    return data;
+                } else {
+                    console.error('Login failed');
+                }
+            })
+            .then(userData => {
+                localStorage.setItem('userData', JSON.stringify(userData));
+
+                const data = JSON.parse(JSON.stringify(userData));
+
+                if(data.usertype === 'customer'){
+                    window.location.href = `/user/${data._id}`;
+
+                }else if(data.usertype === 'owner'){
+                    window.location.href = `/owner/${data._id}`;
+
+                }else if(data.usertype === 'admin'){
+                    window.location.href = '/admin';
+
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    });
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+
+</body>
+</html>
